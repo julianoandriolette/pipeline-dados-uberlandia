@@ -5,7 +5,7 @@ from datetime import datetime
 # Configuração da página
 st.set_page_config(page_title="Dashboard Clima Uberlândia", page_icon="🌤️")
 
-st.title("🌤️ Pipeline de Dados: Uberlândia")
+st.title("🌤️ Pipeline de Dados: Uberlândia - Juliano")
 st.markdown(f"**Estudante:** Juliano Gomes | **Curso:** Sistemas de Informação (Uniessa)")
 
 # 1. EXTRAÇÃO (Simulada)
