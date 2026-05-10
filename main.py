@@ -2,27 +2,39 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Configuração da página
-st.set_page_config(page_title="Dashboard Clima Uberlândia", page_icon="🌤️")
+# Configuração da página com tema Dark/Neon
+st.set_page_config(page_title="Pipeline JA.data", page_icon="🧪", layout="wide")
 
-st.title("🌤️ Pipeline de Dados: Uberlândia - Juliano")
-st.markdown(f"**Estudante:** Juliano Gomes | **Curso:** Sistemas de Informação (Uniessa)")
+# CSS para injetar o estilo Neon no Streamlit
+st.markdown("""
+    <style>
+    .main { background-color: #020508; color: #ffffff; }
+    .stMetric { background-color: #060c12; border: 1px solid #00ffff; padding: 15px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+    h1 { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+    </style>
+    """, unsafe_allow_html=True)
 
-# 1. EXTRAÇÃO (Simulada)
-dados_brutos = {
-    'Sensor': ['Centro', 'Santa Mônica', 'Umuarama'],
-    'Temp ºC': [28.5, 30.2, 25.4],
-    'Umidade %': [45, 40, 60],
-    'Última Atualização': [datetime.now().strftime("%d/%m/%Y %H:%M")] * 3
+st.title("🧪 Pipeline de Dados | Uberlândia - MG")
+st.write(f"**Engenheiro responsável:** Juliano Andriolette")
+
+# Simulação de Extração (ETL)
+st.subheader("1. Extração e Transformação")
+data = {
+    'Localidade': ['Centro', 'Santa Mônica', 'Umuarama', 'Granja Marileusa'],
+    'Temperatura (ºC)': [28.4, 30.1, 27.5, 29.8],
+    'Umidade (%)': [45, 42, 50, 44],
+    'Status': ['Ativo', 'Ativo', 'Ativo', 'Ativo']
 }
+df = pd.DataFrame(data)
 
-df = pd.DataFrame(dados_brutos)
+# Métricas em destaque
+col1, col2, col3 = st.columns(3)
+col1.metric("Temperatura Média", f"{df['Temperatura (ºC)'].mean():.1f} °C")
+col2.metric("Umidade Média", f"{df['Umidade (%)'].mean():.0f}%")
+col3.metric("Sensores Ativos", "4/4")
 
-# 2. TRANSFORMAÇÃO
-df['Temp ºF'] = (df['Temp ºC'] * 9/5) + 32
+# Exibição da Tabela Processada
+st.subheader("2. Carga (Dados Processados)")
+st.dataframe(df.style.highlight_max(axis=0, color='#004444'))
 
-# 3. VISUALIZAÇÃO (A "Carga" para o usuário)
-st.subheader("Dados Processados do Pipeline")
-st.table(df)
-
-st.info("Este dashboard demonstra um processo de ETL (Extract, Transform, Load) rodando na nuvem.")
+st.info("Pipeline integrado via GitHub e hospedado na Streamlit Cloud.")
