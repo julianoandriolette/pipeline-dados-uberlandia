@@ -5,28 +5,6 @@ import requests
 # Configuração Clean Dark
 st.set_page_config(page_title="JA.data | Real-Time", page_icon="🌐", layout="wide")
 
-# Logo abaixo da tabela de previsão
-st.subheader("📈 Tendência de Temperatura")
-# Criando um gráfico de linha com as colunas de Máxima e Mínima
-st.line_chart(forecast_df.set_index('date')[['max', 'min']])
-
-@st.cache_data(ttl=3600) # Guarda os dados por 3600 segundos (1 hora)
-def get_weather_data():
-    # ... resto da sua função de busca ...
-
-    import time
-
-# Pega a hora atual
-hora_atual = datetime.now().hour
-
-if 5 <= hora_atual < 12:
-    saudacao = "Bom dia"
-elif 12 <= hora_atual < 18:
-    saudacao = "Boa tarde"
-else:
-    saudacao = "Boa noite"
-
-st.write(f"### {saudacao}, Juliano! O sistema está operando normalmente.")
 st.markdown("""
     <style>
     .stApp { background-color: #11141d; color: #cfd8dc; }
