@@ -2,58 +2,74 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Configuração da página com tema Soft Dark
-st.set_page_config(page_title="Pipeline JA.data", page_icon="🧪", layout="wide")
+# Configuração da página - Clean Professional
+st.set_page_config(page_title="JA.data Dashboard", page_icon="📊", layout="wide")
 
-# CSS para injetar o estilo de cores suaves no Streamlit
+# CSS para remover cores fortes e brilhos (Sombras e bordas suaves)
 st.markdown("""
     <style>
-    /* Fundo azul marinho muito escuro conforme o portfólio */
-    .main { 
-        background-color: #0f111a; 
-        color: #e1e2e1; 
+    /* Fundo Dark suave e elegante */
+    .stApp { 
+        background-color: #11141d; 
+        color: #cfd8dc; 
     }
-    /* Cards de métricas com bordas Lavanda Suave */
+    
+    /* Cards de métricas: Sem brilho forte, bordas discretas */
     [data-testid="stMetric"] {
-        background-color: #191c29;
-        border: 1px solid #b39ddb;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(179, 157, 219, 0.2);
+        background-color: #1a1f2b;
+        border: 1px solid #333c4d;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: none;
     }
-    /* Títulos em Lavanda com brilho sutil */
+    
+    /* Títulos em tom de Azul Acinzentado (Slate) sem brilho */
     h1, h2, h3 { 
-        color: #b39ddb !important; 
-        text-shadow: 0 0 8px rgba(179, 157, 219, 0.3); 
+        color: #90a4ae !important; 
+        font-weight: 600 !important;
+        text-shadow: none !important;
     }
-    /* Estilo para labels de métricas */
+    
+    /* Labels das métricas mais suaves */
     [data-testid="stMetricLabel"] {
-        color: #94a3b8 !important;
+        color: #78909c !important;
+    }
+    
+    /* Valor numérico da métrica */
+    [data-testid="stMetricValue"] {
+        color: #eceff1 !important;
+    }
+
+    /* Ajuste de links e info */
+    .stAlert {
+        background-color: #1a1f2b;
+        border: 1px solid #333c4d;
+        color: #90a4ae;
     }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🧪 Pipeline de Dados | Uberlândia - MG")
-st.write(f"**Engenheiro responsável:** Juliano Andriolette")
+st.title("📊 Pipeline de Dados | Uberlândia - MG")
+st.write(f"Gestão Técnica: Juliano Andriolette")
 
-# Simulação de Extração (ETL)
-st.subheader("1. Processamento de Dados")
+# Simulação de ETL
+st.subheader("Processamento de Fluxo")
 data = {
     'Localidade': ['Centro', 'Santa Mônica', 'Umuarama', 'Granja Marileusa'],
     'Temperatura (ºC)': [28.4, 30.1, 27.5, 29.8],
     'Umidade (%)': [45, 42, 50, 44],
-    'Status': ['Ativo', 'Ativo', 'Ativo', 'Ativo']
+    'Status': ['Estável', 'Estável', 'Estável', 'Estável']
 }
 df = pd.DataFrame(data)
 
-# Métricas em destaque (Cores Azul Céu e Lavanda)
+# Métricas com visual limpo
 col1, col2, col3 = st.columns(3)
 col1.metric("Temperatura Média", f"{df['Temperatura (ºC)'].mean():.1f} °C")
 col2.metric("Umidade Média", f"{df['Umidade (%)'].mean():.0f}%")
-col3.metric("Sensores Operacionais", "4/4")
+col3.metric("Status do Sistema", "Online")
 
-# Exibição da Tabela Processada (Estilo Menta Suave)
-st.subheader("2. Dados Consolidados")
-st.dataframe(df.style.highlight_max(axis=0, color='#2e3c30')) # Realce em tom de menta escuro
+# Tabela com cores neutras
+st.subheader("Dados Consolidados")
+st.dataframe(df, use_container_width=True)
 
-st.info("Pipeline JA.data: Processamento em tempo real via Streamlit Cloud.")
+st.info("Visual otimizado para análise técnica. Integração contínua via GitHub.")
