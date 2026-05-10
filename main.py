@@ -15,7 +15,7 @@ def get_weather_data():
         return None
 
 # Configuração da Página
-st.set_page_config(page_title="JA.data | Dashboard Real-Time", page_icon="🌐", layout="wide")
+st.set_page_config(page_title="JulianoAndriolette | Dashboard Real-Time", page_icon="🌐", layout="wide")
 
 # Estilo Clean Dark
 st.markdown("""
