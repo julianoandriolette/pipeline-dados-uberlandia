@@ -1,75 +1,56 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+import requests
 
-# Configuração da página - Clean Professional
-st.set_page_config(page_title="JA.data Dashboard", page_icon="📊", layout="wide")
+# Configuração Clean Dark
+st.set_page_config(page_title="JA.data | Real-Time", page_icon="🌐", layout="wide")
 
-# CSS para remover cores fortes e brilhos (Sombras e bordas suaves)
 st.markdown("""
     <style>
-    /* Fundo Dark suave e elegante */
-    .stApp { 
-        background-color: #11141d; 
-        color: #cfd8dc; 
-    }
-    
-    /* Cards de métricas: Sem brilho forte, bordas discretas */
+    .stApp { background-color: #11141d; color: #cfd8dc; }
     [data-testid="stMetric"] {
         background-color: #1a1f2b;
         border: 1px solid #333c4d;
         padding: 20px;
         border-radius: 12px;
-        box-shadow: none;
     }
-    
-    /* Títulos em tom de Azul Acinzentado (Slate) sem brilho */
-    h1, h2, h3 { 
-        color: #90a4ae !important; 
-        font-weight: 600 !important;
-        text-shadow: none !important;
-    }
-    
-    /* Labels das métricas mais suaves */
-    [data-testid="stMetricLabel"] {
-        color: #78909c !important;
-    }
-    
-    /* Valor numérico da métrica */
-    [data-testid="stMetricValue"] {
-        color: #eceff1 !important;
-    }
-
-    /* Ajuste de links e info */
-    .stAlert {
-        background-color: #1a1f2b;
-        border: 1px solid #333c4d;
-        color: #90a4ae;
-    }
+    h1, h2, h3 { color: #90a4ae !important; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("📊 Pipeline de Dados | Uberlândia - MG")
-st.write(f"Gestão Técnica: Juliano Andriolette")
+st.title("🌐 Pipeline de Dados Real-Time")
+st.write("Dados extraídos via API HG Brasil para Uberlândia, MG")
 
-# Simulação de ETL
-st.subheader("Processamento de Fluxo")
-data = {
-    'Localidade': ['Centro', 'Santa Mônica', 'Umuarama', 'Granja Marileusa'],
-    'Temperatura (ºC)': [28.4, 30.1, 27.5, 29.8],
-    'Umidade (%)': [45, 42, 50, 44],
-    'Status': ['Estável', 'Estável', 'Estável', 'Estável']
-}
-df = pd.DataFrame(data)
+# Função para buscar dados da API
+def get_weather_data():
+    # Usando woeid de Uberlândia: 455913
+    url = "https://api.hgbrasil.com/weather?woeid=455913&key=79822a63"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()['results']
+    else:
+        return None
 
-# Métricas com visual limpo
-col1, col2, col3 = st.columns(3)
-col1.metric("Temperatura Média", f"{df['Temperatura (ºC)'].mean():.1f} °C")
-col2.metric("Umidade Média", f"{df['Umidade (%)'].mean():.0f}%")
-col3.metric("Status do Sistema", "Online")
+data = get_weather_data()
 
-# Tabela com cores neutras
-st.subheader("Dados Consolidados")
-st.dataframe(df, use_container_width=True)
+if data:
+    # Métricas Reais
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Temperatura Atual", f"{data['temp']}°C")
+    col2.metric("Umidade", f"{data['humidity']}%")
+    col3.metric("Vento", data['wind_speedy'])
+    col4.metric("Condição", data['description'])
 
-st.info("Visual otimizado para análise técnica. Integração contínua via GitHub.")
+    # Tabela de Previsão (Transformação de dados)
+    st.subheader("Previsão para os próximos dias")
+    forecast_df = pd.DataFrame(data['forecast'])
+    
+    # Selecionando e renomeando colunas para o dashboard
+    clean_df = forecast_df[['date', 'weekday', 'max', 'min', 'description']].copy()
+    clean_df.columns = ['Data', 'Dia', 'Máx (°C)', 'Min (°C)', 'Condição']
+    
+    st.dataframe(clean_df, use_container_width=True)
+else:
+    st.error("Erro ao conectar com a API. Verifique sua chave ou limite de requisições.")
+
+st.info("Pipeline: API -> Python/Requests -> Pandas -> Streamlit Cloud")
