@@ -8,16 +8,25 @@ st.set_page_config(page_title="JulianoAndriolette | Dashboard Real-Time", page_i
 
 # 2. Configuração de Cache (Melhora a performance e economiza sua API)
 @st.cache_data(ttl=3600)  # Atualiza os dados a cada 1 hora
+@st.cache_data(ttl=3600)
 def get_weather_data():
-    # Usando woeid de Uberlândia: 455913
     url = "https://api.hgbrasil.com/weather?woeid=455913&key=79822a63"
+    
+    # Adicionando um User-Agent para evitar que a API bloqueie o Python
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    
     try:
-        response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            return response.json()['results']
-    except requests.exceptions.RequestException:
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        # Se der erro de falta de autorização ou limite (ex: 403, 429)
+        if response.status_code != 200:
+            st.warning(f"Status da API: {response.status_code} - {response.text}")
+            return None
+            
+        return response.json()['results']
+    except Exception as e:
+        st.error(f"Erro de Conexão: {e}")
         return None
-    return None
 
 # Estilo Clean Dark
 st.markdown("""
