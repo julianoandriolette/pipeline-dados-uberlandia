@@ -3,19 +3,21 @@ import pandas as pd
 import requests
 from datetime import datetime
 
-# 1. Configuração de Cache (Melhora a performance e economiza sua API)
+# 1. Configuração da Página (OBRIGATORIAMENTE O PRIMEIRO COMANDO STREAMLIT)
+st.set_page_config(page_title="JulianoAndriolette | Dashboard Real-Time", page_icon="🌐", layout="wide")
+
+# 2. Configuração de Cache (Melhora a performance e economiza sua API)
 @st.cache_data(ttl=3600)  # Atualiza os dados a cada 1 hora
 def get_weather_data():
     # Usando woeid de Uberlândia: 455913
     url = "https://api.hgbrasil.com/weather?woeid=455913&key=79822a63"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()['results']
-    else:
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            return response.json()['results']
+    except requests.exceptions.RequestException:
         return None
-
-# Configuração da Página
-st.set_page_config(page_title="JulianoAndriolette | Dashboard Real-Time", page_icon="🌐", layout="wide")
+    return None
 
 # Estilo Clean Dark
 st.markdown("""
@@ -32,7 +34,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Lógica de Saudação Dinâmica
+# 3. Lógica de Saudação Dinâmica
 hora_atual = datetime.now().hour
 if 5 <= hora_atual < 12:
     saudacao = "Bom dia"
@@ -57,17 +59,20 @@ if data:
     # Organizando os dados de previsão
     forecast_df = pd.DataFrame(data['forecast'])
     
-    # 3. Gráfico de Tendência de Temperatura
+    # 4. Gráfico de Tendência de Temperatura
     st.subheader("📈 Tendência de Temperatura (Próximos Dias)")
-    # Preparando dados para o gráfico
+    
+    # Preparando dados para o gráfico de forma explícita
     chart_data = forecast_df[['date', 'max', 'min']].set_index('date')
-    st.line_chart(chart_data, color=["#ff4b4b", "#0077ff"]) # Vermelho para Máx, Azul para Mín
+    
+    # Mapeamento de cores seguro para as colunas do Streamlit
+    st.line_chart(chart_data, y=["max", "min"], color=["#ff4b4b", "#0077ff"]) 
 
     # Tabela Detalhada
     st.subheader("📋 Detalhamento da Previsão")
     clean_df = forecast_df[['date', 'weekday', 'max', 'min', 'description']].copy()
     clean_df.columns = ['Data', 'Dia', 'Máx (°C)', 'Min (°C)', 'Condição']
-    st.dataframe(clean_df, use_container_width=True)
+    st.dataframe(clean_df, use_container_width=True, hide_index=True)
 
 else:
     st.error("Erro ao conectar com a API. Verifique sua conexão ou limite de requisições.")
